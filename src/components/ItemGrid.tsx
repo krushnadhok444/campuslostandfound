@@ -56,6 +56,7 @@ export function ItemGrid({ onContact }: ItemGridProps) {
       const { data, error } = await supabase
         .from('items')
         .select('*')
+        .is('deleted_at', null)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
