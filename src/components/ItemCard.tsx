@@ -2,9 +2,23 @@ import { Item } from '@/types/item';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { MapPin, Clock, MessageCircle, Package } from 'lucide-react';
+import { MapPin, Clock, MessageCircle, Package, Trash2 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/integrations/supabase/client';
+import { toast } from 'sonner';
+import { useAuth } from '@/hooks/useAuth';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from '@/components/ui/alert-dialog';
 
 interface ItemCardProps {
   item: Item;
@@ -12,6 +26,8 @@ interface ItemCardProps {
 }
 
 export function ItemCard({ item, onContact }: ItemCardProps) {
+  const { user } = useAuth();
+  
   const statusConfig = {
     lost: {
       label: 'Lost',
@@ -31,6 +47,23 @@ export function ItemCard({ item, onContact }: ItemCardProps) {
   };
 
   const status = statusConfig[item.status];
+
+  const handleDelete = async () => {
+    try {
+      const { error } = await supabase
+        .from('items')
+        .update({ deleted_at: new Date().toISOString() })
+        .eq('id', item.id);
+
+      if (error) throw error;
+      toast.success('Item moved to Recently Deleted');
+    } catch (error) {
+      console.error('Error deleting item:', error);
+      toast.error('Failed to delete item');
+    }
+  };
+
+  const isOwner = user?.id === item.user_id;
 
   return (
     <Card className="group overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
@@ -88,15 +121,48 @@ export function ItemCard({ item, onContact }: ItemCardProps) {
           </div>
         </div>
 
-        {item.status !== 'claimed' && (
-          <Button
-            onClick={() => onContact(item)}
-            className="w-full mt-2 gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
-          >
-            <MessageCircle className="mr-2 h-4 w-4" />
-            Contact {item.status === 'lost' ? 'Owner' : 'Finder'}
-          </Button>
-        )}
+        <div className="flex gap-2 mt-2">
+          {item.status !== 'claimed' && (
+            <Button
+              onClick={() => onContact(item)}
+              className="flex-1 gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Contact {item.status === 'lost' ? 'Owner' : 'Finder'}
+            </Button>
+          )}
+          
+          {isOwner && (
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button
+                  variant="outline"
+                  size="icon"
+                  className="shrink-0 text-destructive hover:text-destructive hover:bg-destructive/10"
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Delete this item?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    The item will be moved to Recently Deleted and automatically removed after 3 days.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Cancel</AlertDialogCancel>
+                  <AlertDialogAction
+                    onClick={handleDelete}
+                    className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                  >
+                    Delete
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          )}
+        </div>
       </CardContent>
     </Card>
   );

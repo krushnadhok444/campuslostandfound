@@ -19,6 +19,7 @@ export type Database = {
           category: string
           contact_info: string | null
           created_at: string
+          deleted_at: string | null
           description: string | null
           id: string
           image_url: string | null
@@ -32,6 +33,7 @@ export type Database = {
           category: string
           contact_info?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -45,6 +47,7 @@ export type Database = {
           category?: string
           contact_info?: string | null
           created_at?: string
+          deleted_at?: string | null
           description?: string | null
           id?: string
           image_url?: string | null
@@ -88,7 +91,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      cleanup_deleted_items: { Args: never; Returns: undefined }
     }
     Enums: {
       item_status: "lost" | "found" | "claimed"
