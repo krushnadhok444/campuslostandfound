@@ -48,8 +48,8 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
-      if (file.size > 5 * 1024 * 1024) {
-        toast.error('Image must be less than 5MB');
+      if (file.size > 15 * 1024 * 1024) {
+        toast.error('Image must be less than 15MB');
         return;
       }
       setImageFile(file);
@@ -256,7 +256,7 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
               <label className="flex flex-col items-center justify-center h-32 border-2 border-dashed border-border rounded-lg cursor-pointer hover:border-primary/50 transition-colors">
                 <Upload className="h-8 w-8 text-muted-foreground mb-2" />
                 <span className="text-sm text-muted-foreground">Click to upload image</span>
-                <span className="text-xs text-muted-foreground mt-1">Max 5MB</span>
+                <span className="text-xs text-muted-foreground mt-1">Max 15MB</span>
                 <input
                   type="file"
                   accept="image/*"
