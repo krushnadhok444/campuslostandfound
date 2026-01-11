@@ -6,6 +6,7 @@ import { HowItWorks } from '@/components/HowItWorks';
 import { Footer } from '@/components/Footer';
 import { ReportItemModal } from '@/components/ReportItemModal';
 import { ContactModal } from '@/components/ContactModal';
+import { RecentlyDeletedSection } from '@/components/RecentlyDeletedSection';
 import { Item } from '@/types/item';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -36,6 +37,7 @@ const Index = () => {
       <Header onOpenReportModal={() => setReportModalOpen(true)} />
       <Hero onOpenReportModal={() => setReportModalOpen(true)} itemCount={itemCount} />
       <ItemGrid onContact={setContactItem} />
+      <RecentlyDeletedSection />
       <HowItWorks />
       <Footer />
 
