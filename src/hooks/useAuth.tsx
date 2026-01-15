@@ -49,7 +49,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       },
     });
     if (error) {
-      toast.error('Google sign-in is not configured yet. Please use email/password.');
+      toast.error(error.message || 'Failed to sign in with Google. Please try again.');
     }
   };
 
