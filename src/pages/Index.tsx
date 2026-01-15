@@ -7,6 +7,7 @@ import { Footer } from '@/components/Footer';
 import { ReportItemModal } from '@/components/ReportItemModal';
 import { ContactModal } from '@/components/ContactModal';
 import { RecentlyDeletedSection } from '@/components/RecentlyDeletedSection';
+import { MatchingChatbot } from '@/components/MatchingChatbot';
 import { Item } from '@/types/item';
 import { supabase } from '@/integrations/supabase/client';
 
@@ -49,6 +50,7 @@ const Index = () => {
         item={contactItem}
         onClose={() => setContactItem(null)}
       />
+      <MatchingChatbot />
     </div>
   );
 };
