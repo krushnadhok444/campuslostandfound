@@ -218,22 +218,14 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
               </Select>
             </div>
             <div className="space-y-2">
-              <Label>Location *</Label>
-              <Select
+              <Label htmlFor="location">Location *</Label>
+              <Input
+                id="location"
+                placeholder="e.g., Library, Cafeteria"
                 value={formData.location}
-                onValueChange={(v) => setFormData({ ...formData, location: v })}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select location" />
-                </SelectTrigger>
-                <SelectContent>
-                  {LOCATIONS.map((loc) => (
-                    <SelectItem key={loc} value={loc}>
-                      {loc}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+                required
+              />
             </div>
           </div>
 
