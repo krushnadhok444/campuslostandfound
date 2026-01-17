@@ -43,6 +43,8 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
     category: '',
     location: '',
     contact_info: '',
+    phone_number: '',
+    alternate_phone: '',
   });
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -66,7 +68,7 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
     e.preventDefault();
     if (!user) return;
 
-    if (!formData.title || !formData.category || !formData.location) {
+    if (!formData.title || !formData.category || !formData.location || !formData.phone_number) {
       toast.error('Please fill in all required fields');
       return;
     }
@@ -94,6 +96,19 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
         imageUrl = publicUrl.publicUrl;
       }
 
+      // Build contact info with phone numbers
+      const contactParts = [];
+      contactParts.push(`Phone: ${formData.phone_number.trim()}`);
+      if (formData.alternate_phone.trim()) {
+        contactParts.push(`Alt: ${formData.alternate_phone.trim()}`);
+      }
+      if (formData.contact_info.trim()) {
+        contactParts.push(`Email: ${formData.contact_info.trim()}`);
+      } else if (user.email) {
+        contactParts.push(`Email: ${user.email}`);
+      }
+      const fullContactInfo = contactParts.join(' | ');
+
       // Insert item
       const { error: insertError } = await supabase.from('items').insert({
         user_id: user.id,
@@ -103,7 +118,7 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
         location: formData.location,
         status: formData.status,
         image_url: imageUrl,
-        contact_info: formData.contact_info.trim() || user.email,
+        contact_info: fullContactInfo,
       });
 
       if (insertError) throw insertError;
@@ -118,6 +133,8 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
         category: '',
         location: '',
         contact_info: '',
+        phone_number: '',
+        alternate_phone: '',
       });
       setImageFile(null);
       setImagePreview(null);
@@ -267,12 +284,38 @@ export function ReportItemModal({ open, onClose }: ReportItemModalProps) {
             )}
           </div>
 
+          {/* Phone Numbers */}
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="phone">Phone Number *</Label>
+              <Input
+                id="phone"
+                type="tel"
+                placeholder="e.g., 9876543210"
+                value={formData.phone_number}
+                onChange={(e) => setFormData({ ...formData, phone_number: e.target.value })}
+                required
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="alt-phone">Alternate Phone (optional)</Label>
+              <Input
+                id="alt-phone"
+                type="tel"
+                placeholder="e.g., 9123456789"
+                value={formData.alternate_phone}
+                onChange={(e) => setFormData({ ...formData, alternate_phone: e.target.value })}
+              />
+            </div>
+          </div>
+
           {/* Contact Info */}
           <div className="space-y-2">
-            <Label htmlFor="contact">Contact Info</Label>
+            <Label htmlFor="contact">Email</Label>
             <Input
               id="contact"
-              placeholder={user?.email || 'Your email or phone number'}
+              type="email"
+              placeholder={user?.email || 'Your email address'}
               value={formData.contact_info}
               onChange={(e) => setFormData({ ...formData, contact_info: e.target.value })}
             />
