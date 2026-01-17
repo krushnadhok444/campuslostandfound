@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { Item } from '@/types/item';
 import { Card, CardContent, CardHeader } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -19,6 +20,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { ChatModal } from './ChatModal';
 
 interface ItemCardProps {
   item: Item;
@@ -27,6 +29,7 @@ interface ItemCardProps {
 
 export function ItemCard({ item, onContact }: ItemCardProps) {
   const { user } = useAuth();
+  const [chatOpen, setChatOpen] = useState(false);
   
   const statusConfig = {
     lost: {
@@ -122,7 +125,17 @@ export function ItemCard({ item, onContact }: ItemCardProps) {
         </div>
 
         <div className="flex gap-2 mt-2">
-          {item.status !== 'claimed' && (
+          {item.status !== 'claimed' && !isOwner && user && (
+            <Button
+              onClick={() => setChatOpen(true)}
+              className="flex-1 gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
+            >
+              <MessageCircle className="mr-2 h-4 w-4" />
+              Chat with {item.status === 'lost' ? 'Owner' : 'Finder'}
+            </Button>
+          )}
+          
+          {item.status !== 'claimed' && !user && (
             <Button
               onClick={() => onContact(item)}
               className="flex-1 gradient-primary text-primary-foreground hover:opacity-90 transition-opacity"
@@ -164,6 +177,14 @@ export function ItemCard({ item, onContact }: ItemCardProps) {
           )}
         </div>
       </CardContent>
+
+      <ChatModal
+        open={chatOpen}
+        onClose={() => setChatOpen(false)}
+        itemId={item.id}
+        itemTitle={item.title}
+        itemOwnerId={item.user_id}
+      />
     </Card>
   );
 }
