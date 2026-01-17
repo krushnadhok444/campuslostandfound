@@ -12,6 +12,7 @@ import {
 import { Search, LogOut, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { AuthModal } from './AuthModal';
+import { MessagesInbox } from './MessagesInbox';
 
 interface HeaderProps {
   onOpenReportModal: () => void;
@@ -59,12 +60,15 @@ export function Header({ onOpenReportModal }: HeaderProps) {
             {/* Actions */}
             <div className="flex items-center gap-3">
               {user && (
-                <Button
-                  onClick={onOpenReportModal}
-                  className="hidden sm:flex gradient-primary text-primary-foreground shadow-glow hover:opacity-90 transition-opacity"
-                >
-                  Report Item
-                </Button>
+                <>
+                  <MessagesInbox />
+                  <Button
+                    onClick={onOpenReportModal}
+                    className="hidden sm:flex gradient-primary text-primary-foreground shadow-glow hover:opacity-90 transition-opacity"
+                  >
+                    Report Item
+                  </Button>
+                </>
               )}
 
               {loading ? (
